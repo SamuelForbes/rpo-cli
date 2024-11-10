@@ -28,12 +28,18 @@ fn move_photos(args: Args) -> Result<(), String>{
 }
 
 fn build_file_moves(source_path: &str) -> Vec<FileMove> {
-    fs::read_dir(source_path)
-        .expect("Could not load source directory")
-        .map(Result::unwrap)
-        .filter(|entry| entry.path().is_file())
-        .map(FileMove::from)
-        .collect::<Vec<FileMove>>()
+    let result = fs::read_dir(source_path);
+
+    match result {
+        Ok(read_dir) => {
+            read_dir.filter(|entry| entry.path().is_file())
+                .map(FileMove::from)
+                .collect::<Vec<FileMove>>()
+        }
+        Err(error) => {
+            eprintln!("{error}");
+        }
+    }
 }
 
 fn process_moves(file_moves: &Vec<FileMove>, target_path: &str) {

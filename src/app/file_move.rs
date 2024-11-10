@@ -20,7 +20,6 @@ impl FileMove {
             target_path: None,
         };
 
-
         if exif.is_some() {
             move_base.target_path = Self::get_target_path(exif.unwrap())
         }
@@ -44,7 +43,7 @@ impl FileMove {
         if let Some(field) = exif.get_field(Tag::DateTime, In::PRIMARY) {
             let created_date =
                 NaiveDateTime::parse_from_str(&field.display_value().to_string(), "%F %T")
-                    .expect("bad value");
+                    .expect("could not parse bad time value");
 
             let month_string = Month::from_u32(created_date.month()).unwrap().name();
 
