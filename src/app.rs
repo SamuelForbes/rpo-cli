@@ -57,6 +57,8 @@ fn process_moves(file_moves: &Vec<FileMove>, target_path: &str) {
 
 fn create_new_folders(file_moves: &Vec<FileMove>, target_path: &str) -> Result<(), io::Error> {
     let mut required_folders = HashSet::new();
+    
+   create_path_if_not_exists(String::from(target_path))?;
 
     for file_move in file_moves {
         if file_move.target_path.as_ref().is_some() {
@@ -68,15 +70,18 @@ fn create_new_folders(file_moves: &Vec<FileMove>, target_path: &str) -> Result<(
         let path_pieces = entry[1..].split("/").collect::<Vec<&str>>();
         let year_folder = format!("{target_path}/{}", path_pieces[0]);
         let month_folder = format!("{target_path}{entry}");
-
-        if !Path::new(&year_folder).exists() {
-            fs::create_dir(year_folder)?;
-        }
-
-        if !Path::new(&month_folder).exists() {
-            fs::create_dir(month_folder)?;
-        }
+        
+        create_path_if_not_exists(year_folder)?;
+        create_path_if_not_exists(month_folder)?;
     }
 
+    Ok(())
+}
+
+fn create_path_if_not_exists(path_string: String) -> Result<(), io::Error> {
+    if !Path::new(&path_string).exists() {
+        fs::create_dir(path_string)?;
+    }
+    
     Ok(())
 }
